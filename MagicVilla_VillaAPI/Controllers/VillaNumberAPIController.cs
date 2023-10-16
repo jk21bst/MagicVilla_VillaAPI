@@ -3,6 +3,7 @@ using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Model;
 using MagicVilla_VillaAPI.Model.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -45,7 +46,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 //return Ok(_mapper.Map<List<VillaDTO>>(villaList));
 
                 //after StandardAPIResponse used as return typer this is the change
-                _response.Result = _mapper.Map<List<VillaDTO>>(villaNumberList);
+                _response.Result = _mapper.Map<List<VillaNumberDTO>>(villaNumberList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -110,6 +111,12 @@ namespace MagicVilla_VillaAPI.Controllers
                 if (createDTO == null)
                 {
                     return BadRequest(createDTO);
+                }
+
+                if(await _dbVilla.GetAsync(u=> u.Id == createDTO.VillaId) == null)
+                {
+                    ModelState.AddModelError("CustomError", "VillaId is Invalid");
+                    return BadRequest(ModelState);
                 }
 
                 //not needed after seperate DTo as there is no Id
@@ -201,6 +208,12 @@ namespace MagicVilla_VillaAPI.Controllers
                 //villa.Occupancy = villaDTO.Occupancy;
                 //villa.Sqft = villaDTO.Sqft; 
 
+
+                if (await _dbVilla.GetAsync(u => u.Id == updateDTO.VillaId) == null)
+                {
+                    ModelState.AddModelError("CustomError", "VillaId is Invalid");
+                    return BadRequest(ModelState);
+                }
 
                 VillaNumber model = _mapper.Map<VillaNumber>(updateDTO);
 
