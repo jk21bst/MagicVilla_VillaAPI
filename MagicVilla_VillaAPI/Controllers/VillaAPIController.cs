@@ -3,6 +3,7 @@ using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Model;
 using MagicVilla_VillaAPI.Model.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -30,6 +31,7 @@ namespace MagicVilla_VillaAPI.Controllers
             this._response = new();
         }
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillas()
         {
@@ -56,6 +58,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetVilla")]    //explicitly defined id is of type int  or this is also fine not defining explicitly[HttpGet("id"))]  
+        [Authorize(Roles ="admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -152,6 +155,7 @@ namespace MagicVilla_VillaAPI.Controllers
             return _response;
         }
         [HttpDelete("{id:int}", Name = "DeleteVilla")]
+        [Authorize(Roles ="custom")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
